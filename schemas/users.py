@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, date
+from pydantic import BaseModel, EmailStr
+from datetime import date
 
 
 class BaseUser(BaseModel):
