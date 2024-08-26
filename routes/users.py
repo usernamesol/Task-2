@@ -20,4 +20,10 @@ async def users_register(
             detail="Username, email or phone already registered."
         )
 
-    return user
+    response = {
+        "Message": "Success",
+        "username": user.username,
+        "email": user.email,
+    }
+
+    return response
