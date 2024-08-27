@@ -40,7 +40,7 @@ async def get_user_from_db(
             User.password == user.password,
         )
     else:
-        stmt = select(User).where(User.username == user)
+        stmt = select(User).where(User.email == user)
 
     user_db = await db.execute(stmt)
     user_db = user_db.first()
