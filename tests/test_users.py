@@ -55,30 +55,17 @@ async def test_users_register(anyio_backend):
             "birth_date": "2000-01-01",
             "phone": "8 993 8123 231"
         }
-        response = await ac.post(url, json=json)
+        response_reg = await ac.post(url, json=json)
+        response_rep = await ac.post(url, json=json)
 
-    assert response.status_code == 201
-    assert response.json() == {
+    assert response_reg.status_code == 201
+    assert response_reg.json() == {
         "Message": "Success",
         "username": json["username"],
         "email": json["email"],
     }
-
-    async with AsyncClient(
-        transport=ASGITransport(app=app),  # type: ignore
-        base_url=base_url,
-    ) as ac:
-        json = {
-            "username": "test1234",
-            "password": "test1234",
-            "email": "test@test.com",
-            "birth_date": "2000-01-01",
-            "phone": "8 993 8123 231"
-        }  # The same as first json.
-        response = await ac.post(url, json=json)
-
-    assert response.status_code == 400
-    assert response.json() == {
+    assert response_rep.status_code == 400
+    assert response_rep.json() == {
         "detail": "Username, email or phone already registered."
     }
 
