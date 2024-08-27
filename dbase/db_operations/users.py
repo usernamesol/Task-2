@@ -38,4 +38,4 @@ async def get_user_from_db(user: BaseUser, db: AsyncSession) -> int | None:
     user_db = await db.execute(stmt)
     user_db = user_db.first()
 
-    return user_db.tuple()[0].id if user_db else None
+    return user_db._tuple()[0].id if user_db else None
