@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
-from models.users import User
+from models.users import User, File
 from schemas.users import UserRegister, BaseUser
 
 
@@ -46,3 +46,11 @@ async def get_user_from_db(
     user_db = user_db.first()
 
     return user_db._tuple()[0].id if user_db else None
+
+
+async def get_files_from_db(user_id: int, db: AsyncSession):
+    stmt = select(File.name).where(File.user_id == user_id)
+    files = await db.execute(stmt)
+    files = files.fetchall()
+
+    return files
