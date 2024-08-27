@@ -30,11 +30,18 @@ async def create_user(user: UserRegister, db: AsyncSession):
     return user_db
 
 
-async def get_user_from_db(user: BaseUser, db: AsyncSession) -> int | None:
-    stmt = select(User).where(
-        User.email == user.email,
-        User.password == user.password,
-    )
+async def get_user_from_db(
+    user: BaseUser | str,
+    db: AsyncSession,
+) -> int | None:
+    if isinstance(user, BaseUser):
+        stmt = select(User).where(
+            User.email == user.email,
+            User.password == user.password,
+        )
+    else:
+        stmt = select(User).where(User.username == user)
+
     user_db = await db.execute(stmt)
     user_db = user_db.first()
 
