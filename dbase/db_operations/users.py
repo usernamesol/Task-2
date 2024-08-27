@@ -14,23 +14,23 @@ async def create_user(user: UserRegister, db: AsyncSession):
     )
     user_exist = await db.execute(stmt)
     if not user_exist.fetchone():
-        user = User(
+        user_db = User(
             username=user.username,
             password=user.password,
             email=user.email,
             birth_date=user.birth_date,
             phone=user.phone,
         )  # type: ignore
-        db.add(user)
+        db.add(user_db)
         await db.commit()
-        await db.refresh(user)
+        await db.refresh(user_db)
     else:
-        user = None
+        user_db = None
 
-    return user
+    return user_db
 
 
-async def get_user_from_db(user: BaseUser, db: AsyncSession):
+async def get_user_from_db(user: BaseUser, db: AsyncSession) -> int | None:
     stmt = select(User).where(
         User.email == user.email,
         User.password == user.password,
@@ -38,4 +38,4 @@ async def get_user_from_db(user: BaseUser, db: AsyncSession):
     user_db = await db.execute(stmt)
     user_db = user_db.first()
 
-    return user_db if user_db else None
+    return user_db.tuple()[0].id if user_db else None
