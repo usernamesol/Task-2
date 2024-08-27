@@ -1,7 +1,8 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from dbase.db_conn import get_db
-from dbase.db_operations.users import get_files_from_db, get_user_from_db
+from dbase.db_operations.users import get_user_from_db
+from dbase.db_operations.files import get_files_from_db
 from jwt_auth import get_user_from_token
 
 
