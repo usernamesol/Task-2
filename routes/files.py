@@ -25,7 +25,7 @@ async def files_all(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"{user} doesn't registered",
         )
-    
+
     files = await get_files_from_db(user_id, db)
     if not files:
         return {"Message": "You don't have any files."}
