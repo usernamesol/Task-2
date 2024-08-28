@@ -16,6 +16,7 @@ from dbase.db_operations.users import get_user_from_db
 from dbase.db_operations.files import (
     get_files_from_db,
     get_file_from_db,
+    delete_file_from_db,
     get_file_content,
     save_file,
     save_file_to_db,
@@ -97,3 +98,27 @@ async def files_get_info(
     }
 
     return response
+
+
+@router.delete("/files/{file_name}", status_code=status.HTTP_200_OK)
+async def files_delete(
+    file_name: str,
+    user: str = Depends(get_user_from_token),
+    db: AsyncSession = Depends(get_db),
+):
+    user_db = await get_user_from_db(user, db)
+    user_db = user_db._tuple()[0]
+    username = user_db.username
+    file_db = await get_file_from_db(user_db.id, file_name, db)
+    if not file_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"File: {file_name} not found.",
+        )
+
+    await delete_file_from_db(file_db._tuple()[0], db)
+    file_path = DBConfig.USER_FILES_PATH + username
+    file_path = os.path.join(file_path, file_name)
+    os.remove(file_path)
+
+    return {"Message": f"File {file_name} has been deleted."}
