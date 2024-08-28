@@ -14,13 +14,7 @@ async def files_all(
     user: str = Depends(get_user_from_token),
     db: AsyncSession = Depends(get_db),
 ):
-    if not user:
-        raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Bad token.",
-            )
     user_id = await get_user_from_db(user, db)
-
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
