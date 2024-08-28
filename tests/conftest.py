@@ -23,11 +23,11 @@ async_session_maker = sessionmaker(
 Base.metadata.bind = engine_test
 
 
-async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
+async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
 
-app.dependency_overrides[get_db] = override_get_async_session
+app.dependency_overrides[get_db] = override_get_db
 
 
 @pytest_asyncio.fixture(autouse=True, scope='session')
