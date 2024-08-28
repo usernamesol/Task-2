@@ -13,6 +13,7 @@ class DBConfig:
     PG_TEST_DB_NAME = os.getenv("PG_TEST_DB_NAME")
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALGORITHM = os.getenv("ALGORITHM")
+    USER_FILES_PATH = os.getenv("USER_FILES_PATH")
     PG_DB_URL = (
         "postgresql+asyncpg://"
         f"{PG_USER}:{PG_PASSWORD}@{PG_SERVER}:{PG_PORT}/{PG_DB_NAME}"
