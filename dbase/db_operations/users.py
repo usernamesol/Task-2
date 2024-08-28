@@ -33,8 +33,7 @@ async def create_user(user: UserRegister, db: AsyncSession):
 async def get_user_from_db(
     user: BaseUser | str,
     db: AsyncSession,
-    ret_username: bool = False
-) -> int | str | None:
+):
     if isinstance(user, BaseUser):
         stmt = select(User).where(
             User.email == user.email,
@@ -45,10 +44,5 @@ async def get_user_from_db(
 
     user_db = await db.execute(stmt)
     user_db = user_db.first()
-    if user_db:
-        if ret_username:
-            return user_db._tuple()[0].username
-        else:
-            return user_db._tuple()[0].id
-
-    return None
+    
+    return user_db if user_db else None
