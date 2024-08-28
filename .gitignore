@@ -3,3 +3,4 @@ env
 *__pycache__*
 .vscode
 alembic/versions/*
+user_files/*
