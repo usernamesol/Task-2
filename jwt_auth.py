@@ -1,5 +1,5 @@
 import jwt
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from dbase.db_conf import DBConfig
 
@@ -25,5 +25,8 @@ def get_user_from_token(token: str = Depends(oauth2_scheme)):
             algorithms=[DBConfig.ALGORITHM],
         )
         return payload.get("sub")
-    except jwt.InvalidTokenError:
-        return None
+    except jwt.InvalidTokenError as exc:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Bad token.",
+            ) from exc
