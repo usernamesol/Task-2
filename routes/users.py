@@ -35,8 +35,8 @@ async def users_login(
     user: BaseUser,
     db: AsyncSession = Depends(get_db),
 ):
-    user_id = await get_user_from_db(user, db)
-    if not user_id:
+    user_db = await get_user_from_db(user, db)
+    if not user_db:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Wrong email or password",
