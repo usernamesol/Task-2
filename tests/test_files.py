@@ -27,3 +27,10 @@ async def test_files_all(ac: AsyncClient):
     })
     assert response.status_code == 200
     assert response.json() == {"Message": "You don't have any files."}
+
+    bad_token = "Bearer test"
+    response = await ac.get("/files/all", headers={
+        "Authorization": bad_token
+    })
+    assert response.status_code == 403
+    assert response.json() == {"detail": "Bad token."}
