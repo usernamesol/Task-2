@@ -64,3 +64,11 @@ async def save_file(
 
     with open(path, "wb") as file:
         file.write(file_content)
+
+
+async def delete_file_from_db(
+    file_db,
+    db: AsyncSession
+) -> None:
+    await db.delete(file_db)
+    await db.commit()
