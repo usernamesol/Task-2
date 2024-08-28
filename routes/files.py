@@ -9,6 +9,7 @@ from fastapi import (
     File,
     BackgroundTasks
 )
+from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from dbase.db_conf import DBConfig
 from dbase.db_conn import get_db
@@ -122,3 +123,24 @@ async def files_delete(
     os.remove(file_path)
 
     return {"Message": f"File {file_name} has been deleted."}
+
+
+@router.get("/files/get/{file_name}", status_code=status.HTTP_200_OK)
+async def files_upload_to_user(
+    file_name: str,
+    user: str = Depends(get_user_from_token),
+    db: AsyncSession = Depends(get_db),
+):
+    user_db = await get_user_from_db(user, db)
+    user_db = user_db._tuple()[0]
+    file_db = await get_file_from_db(user_db.id, file_name, db)
+    if not file_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"File: {file_name} not found.",
+        )
+
+    file_path = DBConfig.USER_FILES_PATH + user_db.username
+    file_path = os.path.join(file_path, file_name)
+
+    return FileResponse(file_path)
