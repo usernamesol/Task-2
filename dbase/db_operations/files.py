@@ -14,19 +14,19 @@ async def get_files_from_db(user_id: int, db: AsyncSession):
     return files
 
 
-async def check_file(
+async def get_file_from_db(
     user_id: int,
     file_name: str,
     db: AsyncSession,
-) -> bool:
+):
     stmt = select(File).where(
         File.user_id == user_id,
         File.name == file_name,
     )
-    file = await db.execute(stmt)
-    file = file.first()
+    file_db = await db.execute(stmt)
+    file_db = file_db.first()
 
-    return True if file else False
+    return file_db
 
 
 async def save_file_to_db(
@@ -34,8 +34,8 @@ async def save_file_to_db(
     file_name: str,
     db: AsyncSession,
 ):
-    file_exist = await check_file(user_db.id, file_name, db)
-    if not file_exist:
+    file_db = await get_file_from_db(user_db.id, file_name, db)
+    if not file_db:
         file_db = File(
             name=file_name,
             user=user_db,
