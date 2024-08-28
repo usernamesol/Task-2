@@ -28,13 +28,8 @@ async def files_all(
     db: AsyncSession = Depends(get_db),
 ):
     user_db = await get_user_from_db(user, db)
-    if not user_db:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"{user} doesn't registered",
-        )
-
-    files = await get_files_from_db(user_db._tuple()[0].id, db)
+    user_db = user_db._tuple()[0]
+    files = await get_files_from_db(user_db.id, db)
     if not files:
         return {"Message": "You don't have any files."}
 
@@ -49,14 +44,8 @@ async def files_upload(
     db: AsyncSession = Depends(get_db),
 ):
     user_db = await get_user_from_db(user, db)
-    if not user_db:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"{user} doesn't registered",
-        )
-
-    file_name = file.filename
     user_db = user_db._tuple()[0]
+    file_name = file.filename
     username = user_db.username
     file_db = await save_file_to_db(user_db, file_name, db)
 
