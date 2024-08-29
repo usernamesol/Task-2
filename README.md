@@ -16,6 +16,8 @@ Create .env with fiels:
 
 Create python environment
 Use python unvironment
+Install packages (pip install -r requirements.txt)
+Go to app directory (cd app)
 Make revisions by alembic (alembic revision)
 Use upgrade by alembic (alembic upgrade head)
 Start uvicorn server (uvicorn main:app)
