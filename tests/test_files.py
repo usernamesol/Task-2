@@ -55,3 +55,26 @@ async def test_files_upload(ac: AsyncClient):
     assert response.json() == {
         "detail": f"File: {file_name} exist."
     }
+
+
+@pytest.mark.asyncio
+async def test_files_get_info(ac: AsyncClient):
+    response = await ac.get(
+        url=f"/files/{file_name}",
+        headers={"Authorization": token},
+    )
+    assert response.status_code == 200
+    assert response.json().keys() == {
+        "file": 1,
+        "last modified": 1,
+        "size": 1,
+    }.keys()
+
+    response = await ac.get(
+        url=f"/files/badfile",
+        headers={"Authorization": token},
+    )
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "File: badfile not found."
+    }
