@@ -118,3 +118,32 @@ async def test_files_delete(ac: AsyncClient):
     assert response.json() == {
         "detail": f"File: {file_name} not found."
     }
+
+
+@pytest.mark.asyncio
+async def test_files_all(ac: AsyncClient):
+    response = await ac.get(
+        url="/files/all",
+        headers={"Authorization": token},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"Message": "You don't have any files."}
+
+    # Upload file
+    with open(DBConfig.TEST_FILE, "rb") as file:
+        response = await ac.post(
+            url="/files/upload",
+            headers={"Authorization": token},
+            files={"file": file},
+        )
+    assert response.status_code == 201
+    assert response.json() == {
+        "Message": f"File: {file_name} uploaded sucessfully."
+    }
+
+    response = await ac.get(
+        url="/files/all",
+        headers={"Authorization": token},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"Files": [file_name]}
