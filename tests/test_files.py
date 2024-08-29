@@ -1,3 +1,4 @@
+import sys
 import pytest
 from httpx import AsyncClient
 from dbase.db_conf import DBConfig
@@ -5,7 +6,12 @@ from dbase.db_conf import DBConfig
 
 @pytest.mark.asyncio
 async def test_files_upload(ac: AsyncClient):
-    global token
+    global token, file_name
+
+    if sys.platform == "win32":
+        file_name = DBConfig.TEST_FILE.split("\\")[-1]
+    else:
+        file_name = DBConfig.TEST_FILE.split("/")[-1]
     # Init user to test files.
     response = await ac.post(
         url="/users/register",
@@ -34,6 +40,9 @@ async def test_files_upload(ac: AsyncClient):
             files={"file": file},
         )
     assert response.status_code == 201
+    assert response.json() == {
+        "Message": f"File: {file_name} uploaded sucessfully."
+    }
 
     # Repeat upload the same file
     with open(DBConfig.TEST_FILE, "rb") as file:
@@ -43,3 +52,6 @@ async def test_files_upload(ac: AsyncClient):
             files={"file": file},
         )
     assert response.status_code == 400
+    assert response.json() == {
+        "detail": f"File: {file_name} exist."
+    }
