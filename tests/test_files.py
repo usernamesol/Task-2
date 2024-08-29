@@ -1,17 +1,22 @@
 import pytest
 from httpx import AsyncClient
+from dbase.db_conf import DBConfig
 
 
 @pytest.mark.asyncio
-async def test_files_all(ac: AsyncClient):
+async def test_files_upload(ac: AsyncClient):
+    global token
     # Init user to test files.
-    response = await ac.post("/users/register", json={
-        "username": "usertestfile",
-        "password": "usertpasswordfile",
-        "email": "testfile@mail.ru",
-        "birth_date": "2000-01-01",
-        "phone": "38 542 5888 232",
-    })
+    response = await ac.post(
+        url="/users/register",
+        json={
+            "username": "usertestfile",
+            "password": "usertpasswordfile",
+            "email": "testfile@mail.ru",
+            "birth_date": "2000-01-01",
+            "phone": "38 542 5888 232",
+        }
+    )
     assert response.status_code == 201
 
     # Get token.
@@ -22,15 +27,19 @@ async def test_files_all(ac: AsyncClient):
     assert response.status_code == 200
     token = "Bearer " + response.json()["Your token"]
 
-    response = await ac.get("/files/all", headers={
-        "Authorization": token,
-    })
-    assert response.status_code == 200
-    assert response.json() == {"Message": "You don't have any files."}
+    with open(DBConfig.TEST_FILE, "rb") as file:
+        response = await ac.post(
+            url="/files/upload",
+            headers={"Authorization": token},
+            files={"file": file},
+        )
+    assert response.status_code == 201
 
-    bad_token = "Bearer test"
-    response = await ac.get("/files/all", headers={
-        "Authorization": bad_token
-    })
-    assert response.status_code == 403
-    assert response.json() == {"detail": "Bad token."}
+    # Repeat upload the same file
+    with open(DBConfig.TEST_FILE, "rb") as file:
+        response = await ac.post(
+            url="/files/upload",
+            headers={"Authorization": token},
+            files={"file": file},
+        )
+    assert response.status_code == 400
