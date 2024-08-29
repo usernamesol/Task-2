@@ -96,3 +96,25 @@ async def test_files_upload_to_user(ac: AsyncClient):
     assert response.json() == {
         "detail": "File: badfile not found."
     }
+
+
+@pytest.mark.asyncio
+async def test_files_delete(ac: AsyncClient):
+    response = await ac.delete(
+        url=f"/files/{file_name}",
+        headers={"Authorization": token},
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "Message": f"File {file_name} has been deleted."
+    }
+
+    # Send the same request.
+    response = await ac.delete(
+        url=f"/files/{file_name}",
+        headers={"Authorization": token},
+    )
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": f"File: {file_name} not found."
+    }
