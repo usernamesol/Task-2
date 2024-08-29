@@ -1,3 +1,4 @@
+import shutil
 import asyncio
 from typing import AsyncGenerator
 
@@ -14,6 +15,9 @@ from main import app
 
 # DATABASE
 DATABASE_URL_TEST = DBConfig.PG_TEST_DB_URL
+
+# TEST DIR
+DBConfig.USER_FILES_PATH = DBConfig.TEST_FILES_PATH
 
 engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool)
 async_session_maker = sessionmaker(
@@ -37,6 +41,7 @@ async def prepare_database():
     yield
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+    shutil.rmtree(DBConfig.TEST_FILES_PATH)  # Delete test dir.
 
 
 # SETUP
