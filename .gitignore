@@ -2,5 +2,5 @@ env
 .env
 *__pycache__*
 .vscode
-alembic/versions/*
+app/alembic/versions/*
 user_files/*
